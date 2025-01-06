@@ -37,7 +37,7 @@ async fn main() {
             .repeat(2);
 
     // Create an interval for a periodic 100ms tick
-    let mut ticker = interval(Duration::from_millis(100));
+    let mut ticker = interval(Duration::from_millis(1));
 
     loop {
         ticker.tick().await; // Wait for the next tick

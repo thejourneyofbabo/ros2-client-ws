@@ -11,12 +11,11 @@ async fn main() {
         )
         .unwrap();
 
+    // QoS 설정에서 Durability를 Volatile로 변경하고, Reliability를 BestEffort로 설정
     let reliable_qos = ros2::QosPolicyBuilder::new()
-        .history(policy::History::KeepLast { depth: 10 })
-        .reliability(policy::Reliability::Reliable {
-            max_blocking_time: ros2::Duration::from_millis(100),
-        })
-        .durability(policy::Durability::TransientLocal)
+        .history(policy::History::KeepLast { depth: 10 }) // KeepLast 설정
+        .reliability(policy::Reliability::BestEffort) // BestEffort로 설정
+        .durability(policy::Durability::Volatile) // Volatile 설정
         .build();
 
     let chatter_topic = node
@@ -35,7 +34,7 @@ async fn main() {
         .async_stream()
         .for_each(|result| async {
             match result {
-                Ok((msg, _)) => println!("I heard: {msg}"),
+                Ok((msg, _)) => println!("I heard: {msg}"), // 실시간 메시지만 출력
                 Err(e) => eprintln!("Receive request error: {:?}", e),
             }
         });

@@ -1,0 +1,11 @@
+[package]
+name = "r2cl_ws"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+futures = "*"
+ros2-client = "*"
+async-io = "*"  
+smol = "*"      
+tokio = { version = "1.42.0", features = ["full"] }

@@ -9,3 +9,5 @@ ros2-client = "*"
 async-io = "*"  
 smol = "*"      
 tokio = { version = "1.42.0", features = ["full"] }
+rustdds = "*"
+mio = "*"

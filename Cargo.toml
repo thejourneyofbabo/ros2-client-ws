@@ -9,5 +9,6 @@ ros2-client = "*"
 async-io = "*"  
 smol = "*"      
 tokio = { version = "1.42.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
 rustdds = "*"
 mio = "*"

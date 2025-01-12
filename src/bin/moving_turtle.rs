@@ -2,6 +2,7 @@ use ros2_client::{ros2, ros2::policy, Context, MessageTypeName, Name, NodeName, 
 use serde::{Deserialize, Serialize};
 use tokio::time::{interval, Duration};
 
+/// Represents a 3D vector with x, y, and z components.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Vector3 {
     pub x: f64,
@@ -9,13 +10,8 @@ pub struct Vector3 {
     pub z: f64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Twist {
-    pub linear: Vector3,
-    pub angular: Vector3,
-}
-
 impl Vector3 {
+    /// Creates a new Vector3 with all components set to 0.0.
     fn zero() -> Self {
         Self {
             x: 0.0,
@@ -25,7 +21,15 @@ impl Vector3 {
     }
 }
 
+/// Represents a velocity command for a robot, consisting of linear and angular velocities.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Twist {
+    pub linear: Vector3,
+    pub angular: Vector3,
+}
+
 impl Twist {
+    /// Creates a new Twist with both linear and angular velocities set to zero.
     fn new() -> Self {
         Self {
             linear: Vector3::zero(),
@@ -34,6 +38,14 @@ impl Twist {
     }
 }
 
+/// Publishes a Twist message to the specified topic.
+///
+/// This function publishes a Twist message with different velocities based on the `loop_count`.
+///
+/// * `publisher`: A reference to the ROS 2 publisher.
+/// * `loop_count`: A mutable reference to the loop count.
+///
+/// Returns a Result that indicates success or an error.
 async fn publish_twist(
     publisher: &ros2_client::Publisher<Twist>,
     loop_count: &mut i32,
@@ -66,7 +78,10 @@ async fn publish_twist(
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create a new ROS 2 context
     let context = Context::new().unwrap();
+
+    // Create a new ROS 2 node
     let mut node = context
         .new_node(
             NodeName::new("/ros2_demo", "moving_turtle").unwrap(),
@@ -74,7 +89,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .unwrap();
 
-    // QoS 설정
+    // Configure QoS policy
     let qos = ros2::QosPolicyBuilder::new()
         .history(policy::History::KeepLast { depth: 10 })
         .reliability(policy::Reliability::Reliable {
@@ -83,7 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .durability(policy::Durability::Volatile)
         .build();
 
-    // 토픽 및 게시자 생성
+    // Create a ROS 2 topic
     let topic = node
         .create_topic(
             &Name::new("/turtle1", "cmd_vel").unwrap(),
@@ -91,11 +106,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             &qos,
         )
         .unwrap();
+
+    // Create a ROS 2 publisher
     let publisher = node.create_publisher(&topic, None).unwrap();
 
+    // Initialize loop count and create a timer
     let mut loop_count = 0;
     let mut ticker = interval(Duration::from_millis(10));
 
+    // Publish Twist messages periodically
     loop {
         ticker.tick().await; // Wait for the next tick
         publish_twist(&publisher, &mut loop_count).await?;

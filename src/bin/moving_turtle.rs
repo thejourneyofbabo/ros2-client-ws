@@ -81,8 +81,8 @@ impl MovingTurtle {
 
         // Determine movement pattern based on the loop count
         (msg.linear.x, msg.angular.z) = match self.loop_count {
-            0..=99 => (2.0, 0.0),    // Move forward
-            100..=199 => (0.0, 1.0), // Rotate
+            0..100 => (2.0, 0.0),   // Move forward
+            100..200 => (0.0, 1.0), // Rotate
             _ => {
                 self.loop_count = 0; // Reset loop count
                 (0.0, 0.0) // Stop
